@@ -24,6 +24,10 @@ const project = new Schema({
         type: String,
         required:true
     },
+    status_id: {
+        type: String,
+        required:true
+    },
     packet:{
         packet_name:{
             type: String,
@@ -48,16 +52,8 @@ const project = new Schema({
         }
     }],
     transaction:{
-        transaction_amount:{
-            type: String,
-            required:true
-        },
         transaction_status:{
             type: String,
-        },
-        time: {
-            type: Date,
-            default : Date.now()
         }
     },
     ssl:{

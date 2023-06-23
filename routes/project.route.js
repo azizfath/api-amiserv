@@ -6,6 +6,7 @@ router.get('/',projectController.get)
 router.get('/:id',projectController.getById)
 router.post('/add',projectController.add)
 router.put('/edit/:id', projectController.editById)
+router.put('/edit/status/:id', projectController.editStatusById)
 router.delete('/:id',projectController.deleteById)
 
 module.exports = router
