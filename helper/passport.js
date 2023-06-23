@@ -14,11 +14,9 @@ passport.use(
             passReqToCallback: true
         },
         async (req, email, password, done) => {
-            // console.log(email, password, req.body.firstName);
             try {
                 const ensureEmail = await UserModel.findOne({ email: email });
                 if (ensureEmail) {
-                    // console.log(ensureEmail)
                     return done(null, false, { message: 'Email already registered' })
                 }
                 // const user = await UserModel.create({email, password});

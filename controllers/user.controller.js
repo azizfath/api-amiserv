@@ -6,13 +6,6 @@ var LocalStrategy = require('passport-local');
 const users = require('../models/user.model')
 const { ObjectId } = require("mongodb");
 
-register=async (req, res, next) => {
-    res.json({
-      message: 'Register success',
-      user: req.user
-    })
-}
-
 login=async (req, res, next) => {passport.authenticate('login', async (err, user, info) => {
     try {
       if (err) {
@@ -77,4 +70,4 @@ deleteById=async (req, res) => {
   }
 }
 
-module.exports = {register,login,editById,deleteById}
+module.exports = {login,editById,deleteById}
