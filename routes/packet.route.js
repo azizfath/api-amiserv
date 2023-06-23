@@ -7,5 +7,6 @@ router.get('/:id',packetController.getById)
 router.post('/',packetController.post)
 router.put('/:id',packetController.editById)
 router.delete('/:id',packetController.deleteById)
+router.get('/type/:type',packetController.findPacketByType)
 
 module.exports = router
