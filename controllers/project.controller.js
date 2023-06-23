@@ -3,6 +3,7 @@ const { ObjectId } = require("mongodb");
 const router = express.Router();
 const projects = require('../models/project.model')
 const packets = require('../models/packet.model')
+const statuss = require('../models/status.model')
 
 get=async (req, res) => {
   try {
@@ -38,10 +39,14 @@ add=async (req, res) => {
       domain_type,
       domain_name,
       packet_type,
-      ssl_type
+      ssl_type,
+      status_id
     } = req.body
-    console.log(req.body);
+    
     const findPacketbyType= await packets.findOne({type: packet_type})
+    const statusModel= await statuss.findOne({status_id:status_id})
+    history_description = statusModel.history_description
+    status = statusModel.description
     packet_name = findPacketbyType.name
     price = findPacketbyType.price
     let ssl_cert_file=''
@@ -53,6 +58,9 @@ add=async (req, res) => {
     if (domain_type==0){domain_type="subdomain"}
     else if (domain_type==1){domain_type="self"}
 
+    if (statusModel.status_id==0){transaction_status="unpaid"}
+    else if (statusModel.status_id>0){transaction_status="paid"}
+
     const insertData = await projects.create(
       {
         title,
@@ -61,18 +69,18 @@ add=async (req, res) => {
           domain_type,
           domain_name
         },
-        "status": "Project telah diterima, silakan melakukan pembayaran",
+        status_id,
+        status,
         "packet":{
           "packet_name": packet_name,
           "packet_price": price,
           "packet_type": packet_type
         },
         "history":[{
-          "description": "Project dibuat"
+          "description": history_description
         }],
         "transaction": {
-          "transaction_amount": price,
-          "transaction_status": "unpaid"
+          transaction_status
         },
         "ssl":{
           "ssl_type": ssl_type,
@@ -88,7 +96,7 @@ add=async (req, res) => {
       res.send({ message: "Data is not Added" })
     }
   } catch (err) {
-    // console.log(err);
+    console.log(err);
     res.status(500)
     res.send({ message: "Internal Server Error" })
   }
@@ -160,6 +168,51 @@ editById=async (req, res) => {
   }
 }
 
+editStatusById=async (req, res) => {
+  try {
+    const { id } = req.params
+    let {
+      status_id
+    } = req.body
+    const statusModel= await statuss.findOne({status_id:status_id})
+    status = statusModel.description
+    history_description = statusModel.history_description
+    
+    let transaction_status
+    if (statusModel.status_id==0){transaction_status="unpaid"}
+    else if (statusModel.status_id>0){transaction_status="paid"}
+
+    const updatedData = await projects.updateOne(
+      { _id: ObjectId(id)  },
+      {
+        $set:{
+          status_id,
+          status,
+          "transaction": {
+            transaction_status
+          }
+        },
+        $push:{
+          "history":[{
+            description: history_description
+          }]
+        }
+      }
+    )
+    // console.log(updatedData);
+    if (updatedData.modifiedCount === 1) {
+      res.send({ project: updatedData })
+    } else {
+      res.status(400)
+      res.send({ message: "Data Is Not Updated" })
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500)
+    res.send({ message: "Internal Server Error" })
+  }
+}
+
 deleteById=async (req, res) => {
   try {
     const { id } = req.params
@@ -177,4 +230,4 @@ deleteById=async (req, res) => {
 }
 
 
-module.exports = {get,getById,post,editById,deleteById,add};
+module.exports = {get,getById,post,editById,deleteById,add,editStatusById};
