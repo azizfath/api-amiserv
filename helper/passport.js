@@ -22,7 +22,7 @@ passport.use(
                     return done(null, false, { message: 'Email already registered' })
                 }
                 // const user = await UserModel.create({email, password});
-                const user = await new UserModel({ "email": email, "password": password, "firstname": req.body.firstname, "lastname": req.body.lastname, "username": req.body.username, "nomor": req.body.nomor, "role": "user" })
+                const user = await new UserModel({ "email": email, "password": password, "username": req.body.username, "nomor": req.body.nomor, "role": "user" })
                 await user.save()
                 // console.log(user)
                 return done(null, user);

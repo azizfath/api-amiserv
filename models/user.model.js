@@ -47,7 +47,7 @@ userSchema.pre(
         // console.log(hash)
     }
 )
-// verify password 
+
 userSchema.methods.isValidPassword = function (password) {
     return bcrypt.compare(password, this.password)
 }
