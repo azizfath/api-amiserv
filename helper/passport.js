@@ -4,7 +4,6 @@ const UserModel = require('../models/user.model')
 const JWTstrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
 require('dotenv').config()
-
 passport.use(
     'register',
     new localStrategy(
@@ -17,7 +16,7 @@ passport.use(
             try {
                 const ensureEmail = await UserModel.findOne({ email: email });
                 if (ensureEmail) {
-                    return done(null, false, { message: 'Email already registered' })
+                    return done(null, false, {'message':'email was taken.'})
                 }
                 // const user = await UserModel.create({email, password});
                 const user = await new UserModel({ "email": email, "password": password, "username": req.body.username, "nomor": req.body.nomor, "role": "user" })
