@@ -69,6 +69,11 @@ const project = new Schema({
             type: String,
         }
     },
+    deleted: {
+        type: Boolean,
+        required: true,
+        default: false
+    }
 })
 
 const projectModel = mongoose.model('project', project)

@@ -7,8 +7,9 @@ const statuss = require('../models/status.model')
 
 get=async (req, res) => {
   try {
-    const project = await projects.find()
-    res.send({ project: project })
+    const project = await projects.find({deleted:false})
+    console.log(project.deleted);
+    res.send({project: project})
   } catch (err) {
     res.status(500)
     res.send({ message: "Internal Error" })
@@ -34,7 +35,7 @@ getById=async (req, res) => {
 getByOwnerId=async (req, res) => {
   try {
     const { id } = req.params
-    const projectByOwnerId = await projects.findOne({ owner_id: id })
+    const projectByOwnerId = await projects.find({ owner_id: id })
     if (projectByOwnerId) {
       res.send({ project: projectByOwnerId })
     } else {
@@ -235,14 +236,30 @@ editStatusById=async (req, res) => {
 
 deleteById=async (req, res) => {
   try {
+    // const { id } = req.params
+    // const deletedData = await projects.deleteOne({ _id: ObjectId(id) })
+    // if (deletedData) {
+    //   res.send({ data: deletedData })
+    // } else {
+    //   res.status(400)
+    //   res.send({ message: "Data Is Not Deleted" })
+    // }
     const { id } = req.params
-    const deletedData = await projects.deleteOne({ _id: ObjectId(id) })
+    const deletedData = await projects.updateOne(
+      { _id: ObjectId(id)  },
+      {
+        $set:{
+          deleted: true
+        }
+      }
+    )
     if (deletedData) {
       res.send({ data: deletedData })
     } else {
       res.status(400)
       res.send({ message: "Data Is Not Deleted" })
     }
+
   } catch (error) {
     res.status(500)
     res.send({ message: error.message })
