@@ -35,7 +35,7 @@ getById=async (req, res) => {
 getByOwnerId=async (req, res) => {
   try {
     const { id } = req.params
-    const projectByOwnerId = await projects.find({ owner_id: id })
+    const projectByOwnerId = await projects.find({ owner_id: id, deleted: false })
     if (projectByOwnerId) {
       res.send({ project: projectByOwnerId })
     } else {
