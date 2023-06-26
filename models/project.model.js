@@ -6,6 +6,10 @@ const project = new Schema({
         type: String,
         required: true
     },
+    owner_id: {
+        type: String,
+        required: false
+    },
     source_code_url: {
         type: String,
         required:true

@@ -31,10 +31,27 @@ getById=async (req, res) => {
   }
 }
 
+getByOwnerId=async (req, res) => {
+  try {
+    const { id } = req.params
+    const projectByOwnerId = await projects.findOne({ owner_id: id })
+    if (projectByOwnerId) {
+      res.send({ project: projectByOwnerId })
+    } else {
+      res.status(400)
+      res.send({ message: "Data Is Not Available" })
+    }
+  } catch (err) {
+    res.status(500)
+    res.send({ message: "Internal Server Error" })
+  }
+}
+
 add=async (req, res) => {
   try {
     let {
       title,
+      owner_id,
       source_code_url,
       domain_type,
       domain_name,
@@ -64,6 +81,7 @@ add=async (req, res) => {
     const insertData = await projects.create(
       {
         title,
+        owner_id,
         source_code_url,
         domain:{
           domain_type,
@@ -107,6 +125,7 @@ editById=async (req, res) => {
     const { id } = req.params
     let {
       title,
+      owner_id,
       source_code_url,
       domain_type,
       domain_name,
@@ -132,6 +151,7 @@ editById=async (req, res) => {
       {
         $set:{
           title,
+          owner_id,
           source_code_url,
           domain:{
             domain_type,
@@ -230,4 +250,4 @@ deleteById=async (req, res) => {
 }
 
 
-module.exports = {get,getById,post,editById,deleteById,add,editStatusById};
+module.exports = {get,getById,post,editById,deleteById,add,editStatusById,getByOwnerId};
