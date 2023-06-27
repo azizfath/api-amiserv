@@ -22,7 +22,8 @@ const userSchema = new Schema({
     },
     role: {
         type: String,
-        required: true
+        required: true,
+        default: 'user'
     }
 })
 
@@ -47,7 +48,7 @@ userSchema.pre(
         // console.log(hash)
     }
 )
-// verify password 
+
 userSchema.methods.isValidPassword = function (password) {
     return bcrypt.compare(password, this.password)
 }

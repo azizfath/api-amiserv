@@ -4,7 +4,6 @@ const UserModel = require('../models/user.model')
 const JWTstrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
 require('dotenv').config()
-
 passport.use(
     'register',
     new localStrategy(
@@ -14,15 +13,13 @@ passport.use(
             passReqToCallback: true
         },
         async (req, email, password, done) => {
-            // console.log(email, password, req.body.firstName);
             try {
                 const ensureEmail = await UserModel.findOne({ email: email });
                 if (ensureEmail) {
-                    // console.log(ensureEmail)
-                    return done(null, false, { message: 'Email already registered' })
+                    return done(null, false, {'message':'email was taken.'})
                 }
                 // const user = await UserModel.create({email, password});
-                const user = await new UserModel({ "email": email, "password": password, "firstname": req.body.firstname, "lastname": req.body.lastname, "username": req.body.username, "nomor": req.body.nomor, "role": "user" })
+                const user = await new UserModel({ "email": email, "password": password, "username": req.body.username, "nomor": req.body.nomor, "role": "user" })
                 await user.save()
                 // console.log(user)
                 return done(null, user);

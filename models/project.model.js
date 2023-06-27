@@ -6,6 +6,10 @@ const project = new Schema({
         type: String,
         required: true
     },
+    owner_id: {
+        type: String,
+        required: false
+    },
     source_code_url: {
         type: String,
         required:true
@@ -65,6 +69,11 @@ const project = new Schema({
             type: String,
         }
     },
+    deleted: {
+        type: Boolean,
+        required: true,
+        default: false
+    }
 })
 
 const projectModel = mongoose.model('project', project)

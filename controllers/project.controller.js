@@ -7,8 +7,9 @@ const statuss = require('../models/status.model')
 
 get=async (req, res) => {
   try {
-    const project = await projects.find()
-    res.send({ project: project })
+    const project = await projects.find({deleted:false})
+    console.log(project.deleted);
+    res.send({project: project})
   } catch (err) {
     res.status(500)
     res.send({ message: "Internal Error" })
@@ -31,10 +32,27 @@ getById=async (req, res) => {
   }
 }
 
+getByOwnerId=async (req, res) => {
+  try {
+    const { id } = req.params
+    const projectByOwnerId = await projects.find({ owner_id: id, deleted: false })
+    if (projectByOwnerId) {
+      res.send({ project: projectByOwnerId })
+    } else {
+      res.status(400)
+      res.send({ message: "Data Is Not Available" })
+    }
+  } catch (err) {
+    res.status(500)
+    res.send({ message: "Internal Server Error" })
+  }
+}
+
 add=async (req, res) => {
   try {
     let {
       title,
+      owner_id,
       source_code_url,
       domain_type,
       domain_name,
@@ -64,6 +82,7 @@ add=async (req, res) => {
     const insertData = await projects.create(
       {
         title,
+        owner_id,
         source_code_url,
         domain:{
           domain_type,
@@ -107,6 +126,7 @@ editById=async (req, res) => {
     const { id } = req.params
     let {
       title,
+      owner_id,
       source_code_url,
       domain_type,
       domain_name,
@@ -132,6 +152,7 @@ editById=async (req, res) => {
       {
         $set:{
           title,
+          owner_id,
           source_code_url,
           domain:{
             domain_type,
@@ -215,14 +236,30 @@ editStatusById=async (req, res) => {
 
 deleteById=async (req, res) => {
   try {
+    // const { id } = req.params
+    // const deletedData = await projects.deleteOne({ _id: ObjectId(id) })
+    // if (deletedData) {
+    //   res.send({ data: deletedData })
+    // } else {
+    //   res.status(400)
+    //   res.send({ message: "Data Is Not Deleted" })
+    // }
     const { id } = req.params
-    const deletedData = await projects.deleteOne({ _id: ObjectId(id) })
+    const deletedData = await projects.updateOne(
+      { _id: ObjectId(id)  },
+      {
+        $set:{
+          deleted: true
+        }
+      }
+    )
     if (deletedData) {
       res.send({ data: deletedData })
     } else {
       res.status(400)
       res.send({ message: "Data Is Not Deleted" })
     }
+
   } catch (error) {
     res.status(500)
     res.send({ message: error.message })
@@ -230,4 +267,4 @@ deleteById=async (req, res) => {
 }
 
 
-module.exports = {get,getById,post,editById,deleteById,add,editStatusById};
+module.exports = {get,getById,post,editById,deleteById,add,editStatusById,getByOwnerId};

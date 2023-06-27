@@ -6,7 +6,7 @@ const authRoutes = require('./user.route')
 const packetRoutes = require('./packet.route')
 const projectRoute = require('./project.route')
 const statusRoute = require('./status.route')
-
+require('../helper/passport')
 app.get("/", (req,res)=>{
     res.send("hehe")
 })
