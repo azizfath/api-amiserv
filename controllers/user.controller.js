@@ -34,15 +34,31 @@ login=async (req, res, next) => {passport.authenticate('login', async (err, user
   })(req, res, next)
 }
 
+getById=async (req, res) => {
+  try {
+    const { id } = req.params
+    const userById = await users.findOne({ _id: id })
+    if (userById) {
+      res.send({ user: userById })
+    } else {
+      res.status(400)
+      res.send({ message: "Data Is Not Available" })
+    }
+  } catch (err) {
+    res.status(500)
+    res.send({ message: "Internal Server Error" })
+  }
+}
+
 editById=async (req, res) => {
   try {
     const { id } = req.params
-    const { email,role,username,nomor } = req.body
+    const { email,username,nomor } = req.body
     const updatedData = await users.updateOne(
       { _id: ObjectId(id) },
       {
         $set: {
-          email,username,role,nomor
+          email,username,nomor
         },
       }
     )
@@ -70,4 +86,4 @@ deleteById=async (req, res) => {
   }
 }
 
-module.exports = {login,editById,deleteById}
+module.exports = {login,getById,editById,deleteById}

@@ -13,6 +13,7 @@ router.post('/register', passport.authenticate('register', {session: false}), as
 
 router.post('/login', userController.login)
 router.put("/:id", userController.editById)
+router.get("/:id", userController.getById)
 router.delete("/:id", userController.deleteById)
 
 module.exports = router
