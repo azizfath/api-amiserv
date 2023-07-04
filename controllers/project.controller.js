@@ -84,7 +84,7 @@ add=async (req, res) => {
     if (statusModel.status_id==0){transaction_status="unpaid"}
     else if (statusModel.status_id>0){transaction_status="paid"}
     
-    const owner = await users.findOne({id:owner_id})
+    const owner = await users.findOne({_id:owner_id})
 
     const insertData = await projects.create(
       {
