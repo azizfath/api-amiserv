@@ -215,8 +215,9 @@ editStatusById=async (req, res) => {
     else if (statusModel.status_id>0){transaction_status="paid"}
 
     const projectById = await projects.findOne({ _id: id })
-    const owner = await users.findOne({id:projectById.owner_id})
-
+    console.log(projectById);
+    const owner = await users.findOne({_id:projectById.owner_id})
+    console.log(owner);
     const updatedData = await projects.updateOne(
       { _id: ObjectId(id)  },
       {
