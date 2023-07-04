@@ -4,6 +4,11 @@ const router = express.Router();
 const projects = require('../models/project.model')
 const packets = require('../models/packet.model')
 const statuss = require('../models/status.model')
+const users = require('../models/user.model')
+
+const axios = require('axios')
+require('dotenv').config()
+const api_wa = process.env.API_WA_URL
 
 get=async (req, res) => {
   try {
@@ -78,6 +83,8 @@ add=async (req, res) => {
 
     if (statusModel.status_id==0){transaction_status="unpaid"}
     else if (statusModel.status_id>0){transaction_status="paid"}
+    
+    const owner = await users.findOne({id:owner_id})
 
     const insertData = await projects.create(
       {
@@ -110,6 +117,10 @@ add=async (req, res) => {
     // console.log(insertData);
     if (insertData) {
       res.send({ project: insertData })
+      await axios.post(api_wa + '/send', {
+        "number":owner.nomor,
+        "message":`Notifikasi Project Anda *"${title}"* di Amiserv.cloud\n=====================\n\n*Status: ${status}*\n*Deskripsi:* ${history_description}\n\n=====================\n_Pesan ini dibuat otomatis oleh Amiserv.cloud_`
+      })
     } else {
       res.status(400)
       res.send({ message: "Data is not Added" })
@@ -203,6 +214,9 @@ editStatusById=async (req, res) => {
     if (statusModel.status_id==0){transaction_status="unpaid"}
     else if (statusModel.status_id>0){transaction_status="paid"}
 
+    const projectById = await projects.findOne({ _id: id })
+    const owner = await users.findOne({id:projectById.owner_id})
+
     const updatedData = await projects.updateOne(
       { _id: ObjectId(id)  },
       {
@@ -223,6 +237,11 @@ editStatusById=async (req, res) => {
     // console.log(updatedData);
     if (updatedData.modifiedCount === 1) {
       res.send({ project: updatedData })
+      
+      await axios.post(api_wa + '/send', {
+        "number":owner.nomor,
+        "message":`Notifikasi Project Anda *"${projectById.title}"* di Amiserv.cloud\n=====================\n\n*Status: ${status}*\n*Deskripsi:* ${history_description}\n\n=====================\n_Pesan ini dibuat otomatis oleh Amiserv.cloud_`
+      })
     } else {
       res.status(400)
       res.send({ message: "Data Is Not Updated" })
