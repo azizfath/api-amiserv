@@ -288,12 +288,17 @@ deleteById=async (req, res) => {
 getCount=async (req, res) => {
   try {
     const project = await projects.aggregate([
+      { $match:{
+          deleted:false
+        }
+      },
       {
         $group:{
           _id :'$status_id',
           count: {$sum:1}
         }
       }
+
     ])
     res.send(project)
   } catch (err) {
