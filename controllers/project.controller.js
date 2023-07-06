@@ -13,7 +13,6 @@ const api_wa = process.env.API_WA_URL
 get=async (req, res) => {
   try {
     const project = await projects.find({deleted:false})
-    console.log(project.deleted);
     res.send({project: project})
   } catch (err) {
     res.status(500)
@@ -286,5 +285,21 @@ deleteById=async (req, res) => {
   }
 }
 
+getCount=async (req, res) => {
+  try {
+    const project = await projects.aggregate([
+      {
+        $group:{
+          _id :'$status_id',
+          count: {$sum:1}
+        }
+      }
+    ])
+    res.send(project)
+  } catch (err) {
+    res.status(500)
+    res.send({ message: "Internal Error" })
+  }
+}
 
-module.exports = {get,getById,post,editById,deleteById,add,editStatusById,getByOwnerId};
+module.exports = {getCount,get,getById,post,editById,deleteById,add,editStatusById,getByOwnerId};
