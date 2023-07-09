@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const projectController = require('../controllers/project.controller');
 
+router.get('/count', projectController.getCount)
 router.get('/',projectController.get)
 router.get('/:id',projectController.getById)
 router.get('/owner/:id',projectController.getByOwnerId)
