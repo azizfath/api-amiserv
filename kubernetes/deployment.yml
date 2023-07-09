@@ -1,0 +1,61 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amiserv-backend
+  namespace: pr
+spec:
+  selector:
+    matchLabels:
+      run: amiserv-backend
+  template:
+    metadata:
+      labels:
+        run: amiserv-backend
+    spec:
+      containers:
+      - env:
+        - name: JWT_SECRET_OR_KEY
+          value: "secret"
+        - name: MONGO_CONNECTION_STRING
+          value: mongodb://user:pass@ip-address:27017/amiserv
+        - name: API_WA_URL
+          value: https://
+        image: registry.carakan.id/belajar/sudobash/amiserv-backend:v0.1
+        imagePullPolicy: IfNotPresent
+        name: amiserv-backend
+        ports:
+        - containerPort: 3000
+      imagePullSecrets:
+      - name: registry-carakan
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: pr
+  name: amiserv-backend-service
+spec:
+  type: NodePort
+  selector:
+    run: amiserv-backend
+  ports:
+    - port: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-amiserv-backend
+  namespace: pr
+spec:
+  rules:
+    - host: api.amiserv.cloud
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: amiserv-backend-service
+                port:
+                  number: 3000
+  ingressClassName: nginx
